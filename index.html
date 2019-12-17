@@ -52,28 +52,37 @@
         <button class="color" data-color="black"></button>
         <button class="color" data-color="yellow"></button>
         <button class="erasor" data-color="erasor">E</button>
-        <button class="color" data-color="black"></button>
+        <button class="pencile" data-color="pencile">P</button>
       </div>
     </div>
     <script>
       const canvas = document.querySelector(".canvas");
       const colors = document.querySelectorAll(".color");
       const container = document.querySelector(".container");
-      const pixels = document.querySelectorAll(".pixel");
+      let pixels = document.querySelectorAll(".pixel");
       const erasor = document.querySelector(".erasor");
+      const pencile = document.querySelector(".pencile");
 
       let color = "black";
       let erasorOn = false;
-
-      for (let pixel of pixels) {
-        pixel.addEventListener("mousedown", e => {
-          console.log("mouseover the pixel");
-          e.target.stopPropagation();
+      let toDraw = false;
+      let toErase = false;
+      const erasePixel = e => {
+        if (toErase) {
           canvas.removeChild(e.target);
-        });
-      }
+        }
+      };
+      const eventOnPixel = () => {
+        for (let pixel of pixels) {
+          pixel.addEventListener("mousemove", erasePixel, true);
+        }
+      };
+
       for (let colorB of colors) {
-        if (colorB.dataset.color != "erasor") {
+        if (
+          colorB.dataset.color != "erasor" &&
+          colorB.dataset.color != pencile
+        ) {
           colorB.style.background = colorB.dataset.color;
           colorB.addEventListener("click", e => {
             console.log(e.target);
@@ -81,24 +90,12 @@
           });
         }
       }
-      const erase = () => {
-        console.log("exited drawing state");
-        if (erasorOn) {
-          canvas.removeEventListener("mousemove", pixelDraw, true);
+      const clearCanvas = () => {
+        for (let pixel of pixels) {
+          canvas.removeChild(pixel);
         }
       };
-      erasor.addEventListener("click", e => {
-        console.log(e.target);
-        console.log("entered erasor");
-        erasorOn = true;
-        erase();
-      });
-      // erasor.addEventListener("click", e => {
-      //   console.log(e.target);
-      //   console.log("entered erasor");
-      //   erasorOn = true;
-      // });
-      let toDraw = false;
+
       const draw = (x, y) => {
         let pixel = document.createElement("div");
         pixel.style.background = color;
@@ -112,20 +109,39 @@
         pixel.classList = "pixel";
         canvas.appendChild(pixel);
       };
-
       const pixelDraw = e => {
         if (toDraw) {
           draw(e.clientX, e.clientY);
         }
       };
-      canvas.addEventListener("mousedown", e => {
-        toDraw = true;
+      pencile.addEventListener("click", () => {
+        console.log("clicked on pencile");
+        erasorOn = false;
+        canvas.addEventListener("mousedown", e => {
+          console.log("entered mousedown on canvas");
+          toDraw = true;
+          if (erasorOn) {
+            canvas.addEventListener("mousemove", eventOnPixel, true);
+          }
+        });
+        canvas.addEventListener("mouseup", e => {
+          console.log("entered mouseup on canvas");
+          toDraw = false;
+          toErase = false;
+          if (erasorOn) {
+            canvas.removeEventListener("mousemove", eventOnPixel, true);
+          }
+        });
+        canvas.addEventListener("mousemove", pixelDraw, true);
       });
-
-      canvas.addEventListener("mousemove", pixelDraw, true);
-
-      canvas.addEventListener("mouseup", e => {
+      erasor.addEventListener("click", e => {
+        console.log("entered erasor");
+        erasorOn = true;
+        toErase = true;
         toDraw = false;
+        pixels = document.querySelectorAll(".pixel");
+        canvas.addEventListener("mousemove", eventOnPixel, true);
+        canvas.removeEventListener("mousemove", pixelDraw, true);
       });
     </script>
   </body>
