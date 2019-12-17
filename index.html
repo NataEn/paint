@@ -24,16 +24,18 @@
         display: flex;
       }
       .canvas {
+        position: relative;
         flex: 1;
         border: 2px solid black;
       }
       .colorPicker {
+        width: 40px;
         display: flex;
         flex-direction: column;
         border: 2px solid black;
       }
       button {
-        width: 20px;
+        width: 30px;
         height: 30px;
         border: 1px solid red;
       }
@@ -49,18 +51,74 @@
         <button class="color" data-color="blue"></button>
         <button class="color" data-color="black"></button>
         <button class="color" data-color="yellow"></button>
+        <button class="erasor" data-color="erasor"></button>
+        <button class="pencile" data-color="black">E</button>
       </div>
     </div>
     <script>
-      let canvas = document.querySelector(".canvas");
-      let buttons = document.querySelectorAll(".color");
-      for (let button of buttons) {
-        button.style.background = button.dataset.color;
-        button.addEventListener("click", e => {
-          //change the color of the pointer
-          canvas.style.background = "red";
+      const canvas = document.querySelector(".canvas");
+      const colors = document.querySelectorAll(".color");
+      const container = document.querySelector(".container");
+      const pixels = document.querySelectorAll(".pixel");
+      const erasor = document.querySelector(".erasor");
+
+      let color = "black";
+      let erasorOn = false;
+
+      for (let pixel of pixels) {
+        pixel.addEventListener("mousedown", e => {
+          console.log("mouseover the pixel");
+          e.target.stopPropagation();
+          canvas.removeChild(e.target);
         });
       }
+      for (let colorB of colors) {
+        if (colorB.dataset.color !== "erasor") {
+          colorB.style.background = colorB.dataset.color;
+          colorB.addEventListener("click", e => {
+            console.log(e.target);
+            color = e.target.dataset.color;
+          });
+        }
+      }
+      let toDraw = false;
+      const draw = (x, y) => {
+        let pixel = document.createElement("div");
+        pixel.style.background = color;
+        pixel.style.width = "10px";
+        pixel.style.height = "10px";
+        pixel.style.border = "1px solid black";
+        pixel.style.position = "absolute";
+        pixel.style.top = `${y}px`;
+        pixel.style.left = `${x}px`;
+        pixel.style.zIndex = "2";
+        pixel.classList = "pixel";
+        canvas.appendChild(pixel);
+      };
+      const pixelDraw = e => {
+        if (toDraw) {
+          draw(e.clientX, e.clientY);
+        }
+      };
+      canvas.addEventListener("mousedown", e => {
+        toDraw = true;
+      });
+
+      canvas.addEventListener("mousemove", pixelDraw, true);
+
+      canvas.addEventListener("mouseup", e => {
+        toDraw = false;
+      });
+      const erase = () => {
+        canvas.removeEventListener("mousemove", pixelDraw, true);
+        console.log("exited drawing state");
+      };
+      erasor.addEventListener("click", e => {
+        console.log(e.target);
+        console.log("entered erasor");
+        erasorOn = true;
+        canvas.removeEventListener("mousemove", pixelDraw, true);
+      });
     </script>
   </body>
 </html>
