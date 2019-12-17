@@ -51,8 +51,8 @@
         <button class="color" data-color="blue"></button>
         <button class="color" data-color="black"></button>
         <button class="color" data-color="yellow"></button>
-        <button class="erasor" data-color="erasor"></button>
-        <button class="pencile" data-color="black">E</button>
+        <button class="erasor" data-color="erasor">E</button>
+        <button class="color" data-color="black"></button>
       </div>
     </div>
     <script>
@@ -73,7 +73,7 @@
         });
       }
       for (let colorB of colors) {
-        if (colorB.dataset.color !== "erasor") {
+        if (colorB.dataset.color != "erasor") {
           colorB.style.background = colorB.dataset.color;
           colorB.addEventListener("click", e => {
             console.log(e.target);
@@ -81,6 +81,23 @@
           });
         }
       }
+      const erase = () => {
+        console.log("exited drawing state");
+        if (erasorOn) {
+          canvas.removeEventListener("mousemove", pixelDraw, true);
+        }
+      };
+      erasor.addEventListener("click", e => {
+        console.log(e.target);
+        console.log("entered erasor");
+        erasorOn = true;
+        erase();
+      });
+      // erasor.addEventListener("click", e => {
+      //   console.log(e.target);
+      //   console.log("entered erasor");
+      //   erasorOn = true;
+      // });
       let toDraw = false;
       const draw = (x, y) => {
         let pixel = document.createElement("div");
@@ -95,6 +112,7 @@
         pixel.classList = "pixel";
         canvas.appendChild(pixel);
       };
+
       const pixelDraw = e => {
         if (toDraw) {
           draw(e.clientX, e.clientY);
@@ -108,16 +126,6 @@
 
       canvas.addEventListener("mouseup", e => {
         toDraw = false;
-      });
-      const erase = () => {
-        canvas.removeEventListener("mousemove", pixelDraw, true);
-        console.log("exited drawing state");
-      };
-      erasor.addEventListener("click", e => {
-        console.log(e.target);
-        console.log("entered erasor");
-        erasorOn = true;
-        canvas.removeEventListener("mousemove", pixelDraw, true);
       });
     </script>
   </body>
