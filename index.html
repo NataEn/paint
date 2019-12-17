@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0:
+        padding: 0;
+      }
+      div {
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        width: 100vw;
+        height: 100vh;
+        border: 2px solid black;
+        display: flex;
+      }
+      .canvas {
+        flex: 1;
+        border: 2px solid black;
+      }
+      .colorPicker {
+        display: flex;
+        flex-direction: column;
+        border: 2px solid black;
+      }
+      button {
+        width: 30px;
+        height: 30px;
+        border: 1px solid black;
+      }
+    </style>
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="canvas"></div>
+      <div class="colorPicker">
+        <button class="color" data-color="red"></button>
+        <button class="color" data-color="green"></button>
+        <button class="color" data-color="blue"></button>
+        <button class="color" data-color="black"></button>
+        <button class="color" data-color="yellow"></button>
+      </div>
+    </div>
+    <script>
+      let canvas = document.querySelector(".canvas");
+      let buttons = document.querySelectorAll(".color");
+      for (let button of buttons) {
+        button.style.background = button.dataset.color;
+        button.addEventListener("click", e => {
+          //change the color of the pointer
+          canvas.style.background = "red";
+        });
+      }
+    </script>
+  </body>
+</html>
