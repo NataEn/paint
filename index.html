@@ -69,19 +69,13 @@
       let pencileState = false;
       let erasorState = false;
       let bucketState = false;
-
       for (let colorB of colors) {
-        if (
-          colorB.dataset.color != "erasor" &&
-          colorB.dataset.color != "pencile" &&
-          colorB.dataset.color != "bucket"
-        ) {
-          colorB.style.background = colorB.dataset.color;
-          colorB.addEventListener("click", e => {
-            console.log(e.target);
-            color = e.target.dataset.color;
-          });
-        }
+        console.log(colorB);
+        colorB.style.background = colorB.dataset.color;
+        colorB.addEventListener("click", e => {
+          console.log(e.target);
+          color = e.target.dataset.color;
+        });
       }
       const clearCanvas = () => {
         for (let pixel of pixels) {
