@@ -52,8 +52,10 @@
         <button class="color" data-color="black"></button>
         <button class="color" data-color="yellow"></button>
         <button class="erasor" data-color="erasor">E</button>
+        <button class="clear" data-color="clear">C</button>
         <button class="pencile" data-color="pencile">P</button>
         <button class="bucket" data-color="bucket">B</button>
+        <button class="size" data-color="size">S</button>
       </div>
     </div>
     <script>
@@ -62,10 +64,12 @@
       const container = document.querySelector(".container");
       let pixels = document.querySelectorAll(".pixel");
       const erasor = document.querySelector(".erasor");
+      const clear = document.querySelector(".clear");
       const pencile = document.querySelector(".pencile");
       const bucket = document.querySelector(".bucket");
 
       let color = "black";
+      let clearState = false;
       let pencileState = false;
       let erasorState = false;
       let bucketState = false;
@@ -78,6 +82,8 @@
         });
       }
       const clearCanvas = () => {
+        console.log("clearing canvas");
+        canvas.style.background = "white";
         for (let pixel of pixels) {
           canvas.removeChild(pixel);
         }
@@ -115,39 +121,51 @@
       };
       pencile.addEventListener("click", () => {
         console.log("clicked on pencile");
+        clearState = false;
         pencileState = true;
         erasorState = false;
         bucketState = false;
       });
       bucket.addEventListener("click", () => {
         console.log("clicked on bucket");
+        clearState = false;
         pencileState = false;
         erasorState = false;
         bucketState = true;
         bucket.style.background = color;
       });
       erasor.addEventListener("click", e => {
+        clearState = false;
         erasorState = true;
         pencileState = false;
         bucketState = false;
         console.log("entered erasor");
         pixels = document.querySelectorAll(".pixel");
       });
+      clear.addEventListener("click", e => {
+        console.log("entered clear state");
+        pixels = document.querySelectorAll(".pixel");
+        clearCanvas();
+        clearState = true;
+        erasorState = false;
+        pencileState = false;
+        bucketState = false;
+      });
 
       canvas.addEventListener("mousedown", e => {
         console.log("entered mousedown on canvas");
         if (pencileState) {
-          console.log("pencil is adding mousemove");
+          console.log("pencil is adding eventlistener");
           canvas.removeEventListener("click", changeCanvasColor, true);
           canvas.addEventListener("mousemove", pixelDraw, true);
           canvas.removeEventListener("mousemove", eventOnPixel, true);
         } else if (erasorState) {
-          console.log("erasor is adding mousemove");
+          console.log("erasor is adding eventlistener");
           canvas.removeEventListener("click", changeCanvasColor, true);
           canvas.addEventListener("mousemove", eventOnPixel, true);
           canvas.removeEventListener("mousemove", pixelDraw, true);
         } else if (bucketState) {
-          console.log("bucket is adding mousemove");
+          console.log("bucket is adding eventlistener");
           canvas.addEventListener("click", changeCanvasColor, true);
           canvas.removeEventListener("mousemove", eventOnPixel, true);
           canvas.removeEventListener("mousemove", pixelDraw, true);
