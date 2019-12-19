@@ -22,11 +22,19 @@
         height: 100vh;
         border: 1px solid black;
         display: flex;
+        flex-direction: column;
+        justify-content:flex-start;
+        background:#dbd9d9;
       }
       .canvas {
         position: relative;
-        flex: 1;
+        height:60vh;
+        width:60vw;
+        background-color: honeydew;
         border: 2px solid black;
+        resize: both;
+        overflow: hidden;
+        box-shadow: 5px 6px 5px 2px #a8a2a2;
       }
       .colorPicker {
         width: 40px;
@@ -35,7 +43,7 @@
       }
       .control{
         display: flex;
-        flex-direction: column;
+        
       }
       button {
         width: 30px;
@@ -50,23 +58,25 @@
       li{
           margin:10px;
           padding:5px;
+          display: inline-block;
       }
       .shape{
         cursor: grab;
-        resize: both;
+       
       }
     </style>
     <title>Document</title>
   </head>
   <body>
     <div class="container">
-      <div id="canvas" class="canvas"></div>
+     
       <div class="control">
         <ul id="colorPallet">
         </ul>
         <ul id="optionButtons">
         </div>
       </ul>
+      <div id="canvas" class="canvas"></div>
     </div>
     <script src="main.js"></script>
   </body>
