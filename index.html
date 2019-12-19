@@ -44,7 +44,7 @@
   </head>
   <body>
     <div class="container">
-      <div class="canvas"></div>
+      <div id="canvas" class="canvas"></div>
       <div class="colorPicker">
         <button class="color" data-color="red"></button>
         <button class="color" data-color="green"></button>
@@ -56,6 +56,14 @@
         <button class="pencile" data-color="pencile">P</button>
         <button class="bucket" data-color="bucket">B</button>
         <button class="size" data-color="size">S</button>
+        <select name="size" id="pickSize">
+          <option value="dog">Dog</option>
+          <option value="cat">Cat</option>
+          <option value="hamster">Hamster</option>
+          <option value="parrot">Parrot</option>
+          <option value="spider">Spider</option>
+          <option value="goldfish">Goldfish</option>
+        </select>
       </div>
     </div>
     <script>
@@ -73,6 +81,15 @@
       let pencileState = false;
       let erasorState = false;
       let bucketState = false;
+      let pointerState;
+      let states = {
+        pencileState: () => {
+          stateButton.addEventListener("click", () => {
+            console.log("clicked on pencile");
+          });
+        }
+      };
+
       for (let colorB of colors) {
         console.log(colorB);
         colorB.style.background = colorB.dataset.color;

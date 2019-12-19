@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      div {
+        margin: 0;
+        padding: 0;
+        border: 1px solid black;
+      }
+      .container {
+        width: 100vw;
+        height: 100vh;
+        border: 1px solid black;
+        display: flex;
+      }
+      .canvas {
+        position: relative;
+        flex: 1;
+        border: 2px solid black;
+      }
+      .colorPicker {
+        width: 40px;
+        
+        border: 2px solid black;
+      }
+      .control{
+        display: flex;
+        flex-direction: column;
+      }
+      button {
+        width: 30px;
+        height: 30px;
+        border: 1px solid red;
+      }
+      ul{
+          list-style: none;
+          margin:0;
+          padding:0;
+      }
+      li{
+          margin:10px;
+          padding:5px;
+      }
+    </style>
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <div id="canvas" class="canvas"></div>
+      <div class="control">
+        <ul id="colorPallet">
+        </ul>
+        <ul id="optionButtons">
+        </div>
+      </ul>
+    </div>
+    <script src="main.js"></script>
+  </body>
+</html>
