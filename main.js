@@ -9,11 +9,14 @@ Canvas.options = [
   { button: "pencile", icon: "fw icon" },
   { button: "erasor", icon: "fw icon" },
   { button: "bucket", icon: "fw icon" },
-  { button: "clear", icon: "fw icon" }
+  { button: "clear", icon: "fw icon" },
+  { button: "shape", icon: "fw icon" }
 ];
 Canvas.pixels = [];
-
 Canvas.pickedColor = "";
+Canvas.shape;
+Canvas.pickedShape = "square";
+Canvas.shapes = [];
 
 Canvas.start = () => {
   Canvas.createColorButtons();
@@ -56,37 +59,6 @@ Canvas.createOptionButtons = () => {
   }
 };
 
-Canvas.handelState = () => {
-  console.log("entered handel state function");
-  console.log(Canvas.drawPixel);
-  console.log(Canvas.pointerState);
-  if (Canvas.pointerState == "bucket") {
-    console.log("bucket is adding eventlistener");
-    Canvas.canvasElement.addEventListener("click", Canvas.changeCanvasColor, {
-      once: true
-    });
-  } else if (
-    Canvas.pointerState == "pencile" ||
-    Canvas.pointerState == "erasor"
-  ) {
-    Canvas.canvasElement.addEventListener("mousedown", e => {
-      console.log("mousedown event is on");
-      Canvas.pointerState == "pencile"
-        ? (eventOnPixel = Canvas.drawPixel)
-        : (eventOnPixel = Canvas.erasePixel);
-      console.log("event on pixel is", Canvas.drawPixel);
-      Canvas.canvasElement.addEventListener("mousemove", eventOnPixel, true);
-    });
-    Canvas.canvasElement.addEventListener("mouseup", e => {
-      console.log("removed evet on mouse move");
-      Canvas.canvasElement.removeEventListener("mousemove", eventOnPixel, true);
-    });
-  } else if (Canvas.pointerState == "clear") {
-    console.log("erasor is adding eventlistener");
-    Canvas.canvasElement.style.background = "white";
-  }
-};
-
 Canvas.drawPixel = event => {
   console.log("from drawPixel" + event);
   console.log(Canvas.pickedColor);
@@ -119,10 +91,6 @@ Canvas.clearCanvas = () => {
   }
 };
 
-// Canvas.bindCanvasStateToButtons = () => {
-//   const pencile = document.querySelector("#pencile");
-//   const erasor = document.querySelector("#erasor");
-// };
 Canvas.bindButtonsToOptions = () => {
   const bucketBtn = document.querySelector("#bucket");
   const clearBtn = document.querySelector("#clear");
@@ -136,6 +104,100 @@ Canvas.bindButtonsToOptions = () => {
 Canvas.changeCanvasColor = () => {
   console.log("entered changeCanvasColor");
   Canvas.canvasElement.style.background = Canvas.pickedColor;
+};
+Canvas.createDiagonal = event => {
+  const x = event.clientX;
+  const y = event.clientY;
+  const shape = document.createElement("div");
+};
+Canvas.handelShapeCreation = event => {
+  if (event.type == "mousedown") {
+    console.log("mouse down event was fired");
+    let x = event.clientX,
+      y = event.clientY;
+    Canvas.shape = document.createElement("div");
+    Canvas.shape.classList = `shape`;
+    Canvas.shape.style.border = "1px solid black";
+    Canvas.shape.style.backgroundColor = Canvas.pickedColor;
+    Canvas.shape.style.position = "absolute";
+    Canvas.shape.style.top = y + "px";
+    Canvas.shape.style.left = x + "px";
+    Canvas.shape.setAttribute("data-type", `${Canvas.pickedShape}`);
+    Canvas.canvasElement.appendChild(Canvas.shape);
+    document.getElementsByTagName("html")[0].style.cursor = "grab";
+    //add event listener to right click to erase shape
+  } else if (event.type == "mousemove") {
+    console.log("mouse move event was fired");
+    let x = event.clientX,
+      y = event.clientY;
+    if (Canvas.shape) {
+      Canvas.shape.style.width =
+        x - Number.parseInt(Canvas.shape.style.left) + "px";
+      Canvas.shape.style.height =
+        y - Number.parseInt(Canvas.shape.style.top) + "px";
+    }
+    console.log(Canvas.shape);
+  } else if (event.type == "mouseup") {
+    console.log("mouse up event was fired");
+    if (Canvas.shape) {
+      Canvas.shape = null;
+      document.getElementsByTagName("html")[0].style.cursor = "default";
+    }
+    Canvas.canvasElement.removeEventListener(
+      "mousemove",
+      Canvas.handelShapeCreation,
+      true
+    );
+  }
+};
+
+Canvas.handelState = () => {
+  console.log("entered handel state function");
+  if (Canvas.pointerState == "bucket") {
+    console.log("bucket is adding eventlistener");
+    Canvas.canvasElement.addEventListener("click", Canvas.changeCanvasColor, {
+      once: true
+    });
+  } else if (
+    Canvas.pointerState == "pencile" ||
+    Canvas.pointerState == "erasor"
+  ) {
+    Canvas.canvasElement.addEventListener("mousedown", e => {
+      console.log("mousedown event is on");
+      Canvas.pointerState == "pencile"
+        ? (eventOnPixel = Canvas.drawPixel)
+        : (eventOnPixel = Canvas.erasePixel);
+      console.log("event on pixel is", Canvas.drawPixel);
+      Canvas.canvasElement.addEventListener("mousemove", eventOnPixel, true);
+    });
+    Canvas.canvasElement.addEventListener("mouseup", e => {
+      console.log("removed evet on mouse move");
+      Canvas.canvasElement.removeEventListener("mousemove", eventOnPixel, true);
+    });
+  } else if (Canvas.pointerState == "clear") {
+    console.log("erasor is adding eventlistener");
+    Canvas.canvasElement.style.background = "white";
+  } else if (Canvas.pointerState == "shape") {
+    console.log("a shape is created");
+    let shape;
+    Canvas.shape = shape;
+    Canvas.canvasElement.addEventListener(
+      "mousedown",
+      Canvas.handelShapeCreation,
+      true
+    );
+
+    Canvas.canvasElement.addEventListener(
+      "mousemove",
+      Canvas.handelShapeCreation,
+      true
+    );
+    Canvas.canvasElement.addEventListener(
+      "mouseup",
+      Canvas.handelShapeCreation,
+      true
+    );
+  }
 };
 
 Canvas.start();
