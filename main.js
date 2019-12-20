@@ -2,15 +2,28 @@ const Canvas = {};
 Canvas.canvasElement = document.querySelector("#canvas");
 Canvas.pointerState = "";
 Canvas.eventOnPixel = "";
-Canvas.colors = ["#ff0000", "#08d800", "#0402c7", "#fc88c7"];
+Canvas.colors = [
+  "#FF5450",
+  "#08d800",
+  "#6FE886",
+  "#5844FF",
+  "#5E84EB",
+  "#FF64CE",
+  "#FA8A10",
+  "#6C6A80",
+  "#192040",
+  "#478059",
+  "#EEF6E4",
+  "#FAF690"
+];
 Canvas.pointerState = "";
 Canvas.optionButtonsElement = document.querySelector("#optionButtons");
 Canvas.options = [
-  { button: "pencile", icon: "fw icon" },
-  { button: "erasor", icon: "fw icon" },
-  { button: "bucket", icon: "fw icon" },
-  { button: "clear", icon: "fw icon" },
-  { button: "shape", icon: "fw icon" }
+  { button: "pencile", icon: "fas fa-pencil-alt" },
+  { button: "erasor", icon: "fas fa-eraser" },
+  { button: "bucket", icon: "fas fa-fill" },
+  { button: "clear", icon: "far fa-trash-alt" },
+  { button: "shape", icon: "far fa-square" }
 ];
 Canvas.pixels = [];
 Canvas.pickedColor = "";
@@ -35,8 +48,12 @@ Canvas.createColorButtons = () => {
     li.appendChild(button);
     colorPallet.append(li);
     li.addEventListener("click", () => {
+      const bucketBtn = document.querySelector("#bucket");
+      const pencileBtn = document.querySelector("#pencile");
       console.log("clicked on color " + color);
       Canvas.pickedColor = color;
+      pencileBtn.style.color = color;
+      bucketBtn.style.color = color;
       console.log("pickedColor", Canvas.pickedColor);
     });
   }
@@ -47,12 +64,20 @@ Canvas.createOptionButtons = () => {
     const li = document.createElement("li");
     const button = document.createElement("button");
     button.setAttribute("id", option.button);
-    button.innerHTML = option.button;
-    button.addEventListener("click", event => {
-      Canvas.pointerState = event.target.id;
-      console.log("pickebutton", Canvas.pointerState);
-      Canvas.handelState();
-    });
+    button.setAttribute("class", option.icon);
+    button.setAttribute("title", option.button);
+
+    button.addEventListener(
+      "click",
+      event => {
+        Canvas.pointerState = event.target.id;
+        if (event.target.id == "pencile" || event.target.id == "bucket") {
+          button.style.color = Canvas.pickedColor;
+        }
+        Canvas.handelState();
+      },
+      false
+    );
     li.setAttribute("data-option", option.button);
     li.appendChild(button);
     optionButtons.append(li);
@@ -164,6 +189,7 @@ Canvas.handelState = () => {
   ) {
     Canvas.canvasElement.addEventListener("mousedown", e => {
       console.log("mousedown event is on");
+      console.log(Canvas.pointerState);
       Canvas.pointerState == "pencile"
         ? (eventOnPixel = Canvas.drawPixel)
         : (eventOnPixel = Canvas.erasePixel);
