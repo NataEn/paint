@@ -23,7 +23,8 @@ Canvas.options = [
   { button: "erasor", icon: "fas fa-eraser" },
   { button: "bucket", icon: "fas fa-fill" },
   { button: "clear", icon: "far fa-trash-alt" },
-  { button: "shape", icon: "far fa-square" }
+  { button: "square", icon: "shape fas fa-square" },
+  { button: "circle", icon: "shape fas fa-circle" }
 ];
 Canvas.pixels = [];
 Canvas.pickedColor = "";
@@ -45,19 +46,19 @@ Canvas.createColorButtons = () => {
     button.setAttribute("class", "color");
     button.setAttribute("id", color);
     button.style.background = color;
-    li.appendChild(button);
-    colorPallet.append(li);
     li.addEventListener("click", () => {
       const bucketBtn = document.querySelector("#bucket");
       const pencileBtn = document.querySelector("#pencile");
-      const shapeBtn = document.querySelector("#shape");
-      console.log("clicked on color " + color);
+      const shapeBtns = document.querySelectorAll(".shape");
       Canvas.pickedColor = color;
       pencileBtn.style.color = color;
       bucketBtn.style.color = color;
-      shapeBtn.style.color = color;
-      console.log("pickedColor", Canvas.pickedColor);
+      for (const shape of shapeBtns) {
+        shape.style.color = color;
+      }
     });
+    li.appendChild(button);
+    colorPallet.append(li);
   }
 };
 Canvas.createOptionButtons = () => {
@@ -65,8 +66,8 @@ Canvas.createOptionButtons = () => {
   for (const option of Canvas.options) {
     const li = document.createElement("li");
     const button = document.createElement("button");
-    button.setAttribute("id", option.button);
     button.setAttribute("class", option.icon);
+    button.setAttribute("id", option.button);
     button.setAttribute("title", option.button);
     button.addEventListener(
       "click",
@@ -137,19 +138,18 @@ Canvas.createInitialShape = () => {
   let x = event.clientX,
     y = event.clientY;
   Canvas.shape = document.createElement("div");
-  Canvas.shape.classList = `shape`;
+  Canvas.shape.classList = `shape ${Canvas.pointerState}`;
   Canvas.shape.style.border = "1px solid black";
   Canvas.shape.style.backgroundColor = Canvas.pickedColor;
   Canvas.shape.style.position = "absolute";
   Canvas.shape.style.top = y + "px";
   Canvas.shape.style.left = x + "px";
-  Canvas.shape.setAttribute("data-type", `${Canvas.pickedShape}`);
+  Canvas.shape.setAttribute("data-type", `${Canvas.pointerState}`);
   Canvas.canvasElement.appendChild(Canvas.shape);
   Canvas.shapes = document.querySelectorAll(".shape");
-  document.getElementsByTagName("html")[0].style.cursor = "grab";
+  console.log(Canvas.shape);
 };
 Canvas.updateShape = () => {
-  console.log("mouse move event was fired");
   let x = event.clientX,
     y = event.clientY;
   if (Canvas.shape) {
@@ -158,7 +158,6 @@ Canvas.updateShape = () => {
     Canvas.shape.style.height =
       y - Number.parseInt(Canvas.shape.style.top) + "px";
   }
-  console.log(Canvas.shape);
 };
 
 Canvas.handelState = () => {
@@ -171,14 +170,18 @@ Canvas.handelState = () => {
   } else if (
     Canvas.pointerState == "pencile" ||
     Canvas.pointerState == "erasor" ||
-    Canvas.pointerState == "shape"
+    Canvas.pointerState == "square" ||
+    Canvas.pointerState == "circle"
   ) {
     Canvas.canvasElement.addEventListener("mousedown", e => {
       if (Canvas.pointerState == "pencile") {
         Canvas.eventOnCanvas = Canvas.drawPixel;
       } else if (Canvas.pointerState == "erasor") {
         Canvas.eventOnCanvas = Canvas.erasePixel;
-      } else if (Canvas.pointerState == "shape") {
+      } else if (
+        Canvas.pointerState == "square" ||
+        Canvas.pointerState == "circle"
+      ) {
         Canvas.createInitialShape();
         Canvas.eventOnCanvas = Canvas.updateShape;
       }
