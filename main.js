@@ -1,6 +1,7 @@
 const Canvas = {};
 Canvas.canvasElement = document.querySelector("#canvas");
 Canvas.pointerState = "";
+Canvas.lastPointer = "";
 Canvas.possiblePointerStates = ["pencile", "erasor", "shape", "clear"];
 Canvas.eventOnCanvas = "";
 Canvas.colors = [
@@ -73,6 +74,16 @@ Canvas.createOptionButtons = () => {
       "click",
       event => {
         Canvas.pointerState = event.target.id;
+        if (
+          !Canvas.lastPointer ||
+          Canvas.lastPointer.id == Canvas.pointerState
+        ) {
+          event.target.classList.add("active");
+        } else {
+          Canvas.lastPointer.classList.remove("active");
+          event.target.classList.add("active");
+        }
+        Canvas.lastPointer = event.target;
         Canvas.handelState();
       },
       false
@@ -116,6 +127,7 @@ Canvas.clearCanvas = () => {
   for (const pixel of Canvas.pixels) {
     Canvas.canvasElement.removeChild(pixel);
   }
+  Canvas.shapes = Canvas.canvasElement.querySelectorAll(".shape");
   for (const shape of Canvas.shapes) {
     Canvas.canvasElement.removeChild(shape);
   }
@@ -146,7 +158,7 @@ Canvas.createInitialShape = () => {
   Canvas.shape.style.left = x + "px";
   Canvas.shape.setAttribute("data-type", `${Canvas.pointerState}`);
   Canvas.canvasElement.appendChild(Canvas.shape);
-  Canvas.shapes = document.querySelectorAll(".shape");
+
   console.log(Canvas.shape);
 };
 Canvas.updateShape = () => {
@@ -202,7 +214,7 @@ Canvas.handelState = () => {
       }
     });
   } else if (Canvas.pointerState == "clear") {
-    console.log("erasor is adding eventlistener");
+    event.target.classList.remove("active");
     Canvas.clearCanvas();
     Canvas.canvasElement.style.background = "white";
   }
