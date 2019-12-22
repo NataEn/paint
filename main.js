@@ -101,9 +101,12 @@ Canvas.drawPixel = event => {
   const y = event.clientY;
   const pixel = document.createElement("div");
   pixel.style.background = Canvas.pickedColor;
-  pixel.style.width = "10px";
-  pixel.style.height = "10px";
+  pixel.style.width = "5px";
+  pixel.style.height = "5px";
+  pixel.style.margin = "0";
+  pixel.style.padding = "0";
   pixel.style.border = "1px solid black";
+  pixel.style.borderRadius = "50%";
   pixel.style.position = "absolute";
   pixel.style.top = `${y}px`;
   pixel.style.left = `${x}px`;
