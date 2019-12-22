@@ -2,7 +2,13 @@ const Canvas = {};
 Canvas.canvasElement = document.querySelector("#canvas");
 Canvas.pointerState = "";
 Canvas.lastPointer = "";
-Canvas.possiblePointerStates = ["pencile", "erasor", "shape", "clear"];
+Canvas.possiblePointerStates = [
+  "pencile",
+  "erasor",
+  "square",
+  "circle",
+  "clear"
+];
 Canvas.eventOnCanvas = "";
 Canvas.colors = [
   "#FF5450",
@@ -25,13 +31,20 @@ Canvas.options = [
   { button: "bucket", icon: "fas fa-fill" },
   { button: "clear", icon: "far fa-trash-alt" },
   { button: "square", icon: "shape fas fa-square" },
-  { button: "circle", icon: "shape fas fa-circle" }
+  { button: "circle", icon: "shape fas fa-circle" },
+  { button: "save", icon: "fas fa-save" },
+  { button: "load", icon: "fas fa-save" }
 ];
+
 Canvas.pixels = [];
+Canvas.savedPixels = { pixels: [] };
 Canvas.pickedColor = "";
 Canvas.shape;
 Canvas.shapes = [];
+Canvas.savedShapes = { shapes: [] };
 Canvas.pickedShape = "square";
+Canvas.storeLocaly;
+Canvas.storage = window.localStorage;
 
 Canvas.start = () => {
   Canvas.createColorButtons();
@@ -95,7 +108,6 @@ Canvas.createOptionButtons = () => {
 };
 
 Canvas.drawPixel = event => {
-  console.log("from drawPixel" + event);
   console.log(Canvas.pickedColor);
   const x = event.clientX;
   const y = event.clientY;
@@ -103,17 +115,18 @@ Canvas.drawPixel = event => {
   pixel.style.background = Canvas.pickedColor;
   pixel.style.width = "5px";
   pixel.style.height = "5px";
-  pixel.style.margin = "0";
-  pixel.style.padding = "0";
-  pixel.style.border = "1px solid black";
-  pixel.style.borderRadius = "50%";
-  pixel.style.position = "absolute";
   pixel.style.top = `${y}px`;
   pixel.style.left = `${x}px`;
-  pixel.style.zIndex = "2";
   pixel.classList = "pixel";
   Canvas.canvasElement.appendChild(pixel);
   Canvas.pixels = document.querySelectorAll(".pixel");
+  Canvas.savedPixels.pixels.push({
+    width: pixel.style.width,
+    top: pixel.style.top,
+    left: pixel.style.left,
+    color: pixel.style.background,
+    classList: "pixel"
+  });
 };
 Canvas.erasePixel = () => {
   console.log("erasor is firing");
@@ -154,15 +167,12 @@ Canvas.createInitialShape = () => {
     y = event.clientY;
   Canvas.shape = document.createElement("div");
   Canvas.shape.classList = `shape ${Canvas.pointerState}`;
-  Canvas.shape.style.border = "1px solid black";
   Canvas.shape.style.backgroundColor = Canvas.pickedColor;
-  Canvas.shape.style.position = "absolute";
   Canvas.shape.style.top = y + "px";
   Canvas.shape.style.left = x + "px";
   Canvas.shape.setAttribute("data-type", `${Canvas.pointerState}`);
   Canvas.canvasElement.appendChild(Canvas.shape);
-
-  console.log(Canvas.shape);
+  console.log("from create shape", Canvas.shape, `${Canvas.shape}`);
 };
 Canvas.updateShape = () => {
   let x = event.clientX,
@@ -172,6 +182,40 @@ Canvas.updateShape = () => {
       x - Number.parseInt(Canvas.shape.style.left) + "px";
     Canvas.shape.style.height =
       y - Number.parseInt(Canvas.shape.style.top) + "px";
+  }
+};
+Canvas.storeLocaly = () => {
+  const shapes = Canvas.savedShapes;
+  const pixels = Canvas.savedPixels;
+  Canvas.storage.setItem("pixels", JSON.stringify(pixels));
+  Canvas.storage.setItem("shapes", JSON.stringify(shapes));
+};
+Canvas.load = () => {
+  Canvas.clearCanvas();
+  Canvas.storage = localStorage;
+  const pixels = JSON.parse(Canvas.storage.getItem("pixels"));
+  console.log(pixels.pixels);
+  for (const storedpixel of pixels.pixels) {
+    const pixel = document.createElement("div");
+    pixel.style.background = storedpixel.color;
+    pixel.style.width = storedpixel.width;
+    pixel.style.height = storedpixel.width;
+    pixel.style.top = storedpixel.top;
+    pixel.style.left = storedpixel.left;
+    pixel.classList = storedpixel.classList;
+    Canvas.canvasElement.appendChild(pixel);
+  }
+  const shapes = JSON.parse(Canvas.storage.getItem("shapes"));
+  console.log(shapes);
+  for (const storedshape of shapes.shapes) {
+    const shape = document.createElement("div");
+    shape.style.background = storedshape.color;
+    shape.style.width = storedshape.width;
+    shape.style.height = storedshape.height;
+    shape.style.top = storedshape.top;
+    shape.style.left = storedshape.left;
+    shape.classList = storedshape.classList;
+    Canvas.canvasElement.appendChild(shape);
   }
 };
 
@@ -213,6 +257,14 @@ Canvas.handelState = () => {
         true
       );
       if (Canvas.shape) {
+        Canvas.savedShapes.shapes.push({
+          width: Canvas.shape.style.width,
+          height: Canvas.shape.style.height,
+          top: Canvas.shape.style.top,
+          left: Canvas.shape.style.left,
+          color: Canvas.shape.style.backgroundColor,
+          classList: Object.values(Canvas.shape.classList).join(" ")
+        });
         Canvas.shape = null;
       }
     });
@@ -220,6 +272,10 @@ Canvas.handelState = () => {
     event.target.classList.remove("active");
     Canvas.clearCanvas();
     Canvas.canvasElement.style.background = "white";
+  } else if (Canvas.pointerState == "save") {
+    Canvas.storeLocaly();
+  } else if (Canvas.pointerState == "load") {
+    Canvas.load();
   }
 };
 
